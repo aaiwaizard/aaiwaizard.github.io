@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAI | Allied Augmented Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE VARIABLES --- */
+        :root {
+            --bg: #050505;
+            --surface: #0f1012;
+            --surface-hover: #161719;
+            --border: rgba(255, 255, 255, 0.1);
+            
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            
+            --accent-blue: #3b82f6;  
+            --accent-amber: #f59e0b; 
+            --accent-green: #10b981; 
+            
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Manrope', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        /* --- RESET & BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- UTILITIES --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; }
+        .mono { font-family: var(--font-code); font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
+        .blue { color: var(--accent-blue); }
+        .amber { color: var(--accent-amber); }
+        .green { color: var(--accent-green); }
+        
+        .section-padding { padding: 120px 0; }
+        .section-header { margin-bottom: 60px; max-width: 800px; }
+        .section-header h2 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 10px; }
+        .section-label { color: var(--accent-blue); margin-bottom: 16px; display: block; }
+        
+        /* --- BACKGROUND MESH --- */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 100%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            padding: 20px 0;
+            position: fixed; top: 0; width: 100%;
+            background: rgba(5,5,5,0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+        
+        /* Nav Menu */
+        .nav-menu { display: flex; gap: 32px; align-items: center; }
+        .nav-link { 
+            font-family: var(--font-code); font-size: 0.85rem; color: var(--text-muted); 
+            position: relative;
+        }
+        .nav-link:hover { color: var(--text-main); }
+        .nav-link::before {
+            content: '//'; margin-right: 4px; color: var(--accent-blue); opacity: 0; transition: 0.3s;
+        }
+        .nav-link:hover::before { opacity: 1; }
+
+        .btn-small {
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: var(--font-code);
+            background: rgba(255,255,255,0.05);
+        }
+        .btn-small:hover { background: var(--text-main); color: var(--bg); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: 90vh;
+            display: flex; flex-direction: column; justify-content: center;
+            padding-top: 80px;
+            position: relative;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 30px;
+            min-height: 2.2em; 
+        }
+        .hero-desc {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: var(--text-muted);
+            max-width: 650px;
+            margin-bottom: 50px;
+            border-left: 2px solid var(--accent-blue);
+            padding-left: 24px;
+            opacity: 0; animation: fadeIn 1s ease forwards 3s; 
+        }
+        .cta-group { 
+            opacity: 0; animation: fadeIn 1s ease forwards 3.5s; 
+        }
+        .btn-primary {
+            background: var(--text-main); color: var(--bg);
+            padding: 16px 32px; font-weight: 700; border-radius: 2px;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); background: #e0e0e0; }
+
+        /* --- CONVERGENCE (BRAINS) SECTION --- */
+        .convergence-wrapper {
+            position: relative; width: 100%; max-width: 1100px;
+            margin: 60px auto 0; height: 600px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .connector-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .conn-path { fill: none; stroke-width: 1; stroke-opacity: 0.2; }
+        .conn-pulse { fill: none; stroke-width: 2; stroke-dasharray: 20 400; animation: dash 4s linear infinite; }
+        
+        .brain-node {
+            position: absolute; width: 300px;
+            background: rgba(15, 16, 18, 0.9); border: 1px solid var(--border);
+            backdrop-filter: blur(10px); padding: 28px; border-radius: 6px;
+            z-index: 10; transition: transform 0.3s, border-color 0.3s;
+        }
+        .brain-node:hover { transform: scale(1.02); z-index: 20; border-color: rgba(255,255,255,0.3); }
+        .brain-node h3 { font-family: var(--font-display); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
+        .brain-node p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
+        .node-icon { 
+            width: 24px; height: 24px; border-radius: 4px; 
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-family: var(--font-code); font-size: 0.75rem;
+        }
+        .node-1 { top: 20px; left: 0; border-top: 2px solid var(--accent-amber); } 
+        .node-1 .node-icon { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+        .node-2 { top: 20px; right: 0; border-top: 2px solid var(--accent-green); } 
+        .node-2 .node-icon { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .node-3 { bottom: 20px; left: 50%; transform: translateX(-50%); border-top: 2px solid var(--accent-blue); text-align: center; } 
+        .node-3 h3 { justify-content: center; }
+        .node-3 .node-icon { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+
+        .core-reactor {
+            width: 220px; height: 220px; position: relative; z-index: 5;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; background: radial-gradient(circle, rgba(255,255,255,0.03), transparent 70%); border-radius: 50%;
+        }
+        .orbit { position: absolute; border: 1px solid rgba(255,255,255,0.08); border-radius: 50%; animation: spin 20s linear infinite; }
+        .o1 { width: 100%; height: 100%; border-top-color: var(--accent-blue); }
+        .o2 { width: 70%; height: 70%; border-bottom-color: var(--accent-amber); animation-direction: reverse; animation-duration: 15s; }
+        .core-text h2 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; margin: 5px 0; }
+
+        /* --- PROJECTS SECTION (Selected Work) --- */
+        .projects-grid {
+            display: grid; grid-template-columns: 1fr; gap: 40px;
+        }
+        .project-card {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            transition: 0.3s;
+        }
+        @media(min-width: 800px) { .project-card { grid-template-columns: 1.5fr 1fr; } }
+        
+        .project-card:hover { border-color: var(--text-muted); transform: translateY(-5px); }
+        
+        .p-content { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+        .p-tags { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .tag { font-family: var(--font-code); font-size: 0.75rem; border: 1px solid var(--border); padding: 4px 8px; border-radius: 2px; color: var(--text-muted); }
+        
+        .p-visual {
+            background: #000;
+            border-left: 1px solid var(--border);
+            padding: 40px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            color: var(--accent-green);
+            overflow: hidden;
+            position: relative;
+        }
+        /* Fake Terminal Visuals */
+        .terminal-dots { position: absolute; top: 15px; left: 15px; display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #333; }
+        .code-block { opacity: 0.7; }
+
+        /* --- OPEN SOURCE SECTION --- */
+        .oss-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;
+        }
+        .oss-card {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            padding: 30px;
+            transition: 0.3s;
+        }
+        .oss-card:hover { border-color: var(--accent-blue); background: var(--surface-hover); }
+        .oss-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .repo-icon { width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+        .oss-stats { display: flex; gap: 16px; margin-top: 24px; font-family: var(--font-code); font-size: 0.8rem; color: var(--text-muted); }
+        .stat { display: flex; align-items: center; gap: 6px; }
+
+        /* --- BLOG SECTION (Engineering Log) --- */
+        .blog-list { border-top: 1px solid var(--border); }
+        .blog-item {
+            display: grid; grid-template-columns: 1fr; 
+            padding: 30px 0; border-bottom: 1px solid var(--border);
+            transition: 0.3s;
+        }
+        @media(min-width: 700px) { .blog-item { grid-template-columns: 150px 1fr 100px; align-items: baseline; } }
+        
+        .blog-item:hover { padding-left: 10px; background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent); }
+        .blog-date { font-family: var(--font-code); color: var(--text-muted); font-size: 0.9rem; }
+        .blog-title { font-size: 1.2rem; font-weight: 600; }
+        .read-link { font-family: var(--font-code); color: var(--accent-blue); font-size: 0.9rem; text-align: right; opacity: 0; transition: 0.3s; }
+        .blog-item:hover .read-link { opacity: 1; }
+
+        /* --- FOOTER --- */
+        footer { padding: 80px 0; background: #000; border-top: 1px solid var(--border); margin-top: 0; }
+        
+        /* --- ANIMATIONS & FX --- */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes dash { to { stroke-dashoffset: -420; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media(max-width: 900px) {
+            .convergence-wrapper { height: auto; flex-direction: column; gap: 30px; margin-top: 40px; }
+            .brain-node { position: relative; top: auto !important; left: auto !important; right: auto !important; bottom: auto !important; transform: none !important; width: 100%; }
+            .connector-svg { display: none; }
+            .core-reactor { margin: 50px 0; }
+            .nav-menu { display: none; } /* Hide nav links on small mobile for simplicity */
+        }
+        
+        .hacker-text-cursor {
+            display: inline-block; width: 10px; height: 1em;
+            background: var(--accent-blue); animation: blink 1s infinite;
+            vertical-align: middle; margin-left: 5px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-mesh"></div>
+
+    <!-- UPDATED NAVIGATION -->
+    <nav>
+        <div class="container nav-inner">
+            <div class="logo">AAI</div>
+            
+            <ul class="nav-menu">
+                <li><a href="#projects" class="nav-link">PROJECTS</a></li>
+                <li><a href="#opensource" class="nav-link">OPEN_SOURCE</a></li>
+                <li><a href="#blog" class="nav-link">LOGS</a></li>
+            </ul>
+
+            <a href="#contact" class="btn-small">INIT_CONTACT</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="container hero">
+        <div class="mono blue" style="margin-bottom: 24px;">The AAI Methodology</div>
+        <h1>
+            <span id="hacker-headline">Most AI stays in the lab.</span><span class="hacker-text-cursor"></span>
+        </h1>
+        <div class="hero-desc">
+            <p><strong>We bridge the gap.</strong> We combine advanced AI capabilities with product thinking and disciplined engineering to build systems that are reliable, scalable, and trusted in practice.</p>
+        </div>
+        <div class="cta-group">
+            <a href="#contact" class="btn-primary">Engage AAI <span class="mono">>_</span></a>
+        </div>
+    </header>
+
+    <!-- CONVERGENCE SECTION -->
+    <section class="section-padding">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 50px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                <p class="mono blue" style="margin-bottom: 16px;">The Convergence</p>
+                <h2 style="font-family: var(--font-display); font-size: 2.5rem; line-height: 1.2;">
+                    Success happens at the intersection.
+                </h2>
+            </div>
+
+            <div class="convergence-wrapper">
+                <svg class="connector-svg" viewBox="0 0 1100 600">
+                    <path class="conn-path" stroke="var(--accent-amber)" d="M 150 150 C 550 150, 550 150, 550 300" />
+                    <path class="conn-pulse" stroke="var(--accent-amber)" d="M 150 150 C 550 150, 550 150, 550 300" />
+                    <path class="conn-path" stroke="var(--accent-green)" d="M 950 150 C 550 150, 550 150, 550 300" />
+                    <path class="conn-pulse" stroke="var(--accent-green)" d="M 950 150 C 550 150, 550 150, 550 300" style="animation-delay: 2s;" />
+                    <path class="conn-path" stroke="var(--accent-blue)" d="M 550 580 L 550 300" />
+                    <path class="conn-pulse" stroke="var(--accent-blue)" d="M 550 580 L 550 300" style="animation-delay: 1s;" />
+                </svg>
+
+                <div class="brain-node node-1">
+                    <h3><div class="node-icon">01</div> Product Vision</h3>
+                    <p><strong>ROI over R&D.</strong> We define user utility and success metrics before the first model is trained.</p>
+                </div>
+                <div class="brain-node node-2">
+                    <h3><div class="node-icon">02</div> Subject Expertise</h3>
+                    <p><strong>Context is King.</strong> We embed deep domain knowledge into architecture to handle edge cases.</p>
+                </div>
+                <div class="core-reactor">
+                    <div class="orbit o1"></div>
+                    <div class="orbit o2"></div>
+                    <div class="core-text">
+                        <div class="mono" style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 5px;">SYSTEM STATUS</div>
+                        <h2 id="core-output">IMPACT</h2>
+                    </div>
+                </div>
+                <div class="brain-node node-3">
+                    <h3><div class="node-icon">03</div> AI Engineering</h3>
+                    <p><strong>Built to Last.</strong> Testing, versioning, monitoring, and security applied to probabilistic systems.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 1. PROJECTS SECTION -->
+    <section id="projects" class="section-padding" style="background: #080808; border-top: 1px solid var(--border);">
+        <div class="container">
+            <div class="section-header">
+                <span class="mono section-label">/// SELECTED WORK</span>
+                <h2>Production Deployments</h2>
+                <p style="color: var(--text-muted);">Systems engineered for high-stakes environments.</p>
+            </div>
+
+            <div class="projects-grid">
+                <!-- Project 1 -->
+                <div class="project-card">
+                    <div class="p-content">
+                        <div class="mono amber" style="margin-bottom: 12px;">FINTECH // FRAUD_DETECTION</div>
+                        <h3>Real-time Transaction Guard</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 24px;">
+                            A hybrid rules-based and ML pipeline processing 5k transactions/second. Reduced false positives by 40% while maintaining <50ms latency.
+                        </p>
+                        <div class="p-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Rust</span>
+                            <span class="tag">Kafka</span>
+                            <span class="tag">XGBoost</span>
+                        </div>
+                    </div>
+                    <div class="p-visual">
+                        <div class="terminal-dots"><div class="dot"></div><div class="dot"></div></div>
+                        <div class="code-block">
+                            > Ingesting stream... OK<br>
+                            > Fraud_Score: 0.98 [BLOCK]<br>
+                            > Fraud_Score: 0.02 [PASS]<br>
+                            > Latency: 42ms
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card">
+                    <div class="p-content">
+                        <div class="mono blue" style="margin-bottom: 12px;">HEALTHCARE // NLP</div>
+                        <h3>Clinical Note Extraction</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 24px;">
+                            LLM-powered pipeline to structure unstructured EMR data. Implemented rigorous RAG evaluation to ensure 99.9% factual accuracy on medical codes.
+                        </p>
+                        <div class="p-tags">
+                            <span class="tag">LLM</span>
+                            <span class="tag">LangChain</span>
+                            <span class="tag">VectorDB</span>
+                            <span class="tag">HIPAA</span>
+                        </div>
+                    </div>
+                    <div class="p-visual">
+                        <div class="terminal-dots"><div class="dot"></div><div class="dot"></div></div>
+                        <div class="code-block">
+                            > Input: "Pt presents w/..."<br>
+                            > Extracting ICD-10...<br>
+                            > Code: J45.909 (Confirmed)<br>
+                            > Confidence: 99.4%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. OPEN SOURCE SECTION -->
+    <section id="opensource" class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="mono section-label">/// COMMUNITY</span>
+                <h2>Open Source</h2>
+                <p style="color: var(--text-muted);">We don't just use tools; we forge them.</p>
+            </div>
+
+            <div class="oss-grid">
+                <!-- Repo 1 -->
+                <a href="#" class="oss-card">
+                    <div class="oss-header">
+                        <div class="repo-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        </div>
+                        <span class="mono" style="font-size: 0.7rem; border: 1px solid var(--border); padding: 2px 6px; border-radius: 100px;">PUBLIC</span>
+                    </div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">aai-evals</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">A framework for deterministic evaluation of RAG pipelines in production.</p>
+                    <div class="oss-stats">
+                        <span class="stat"><span style="color: var(--accent-amber);">●</span> Python</span>
+                        <span class="stat">★ 420</span>
+                        <span class="stat">⑂ 85</span>
+                    </div>
+                </a>
+
+                <!-- Repo 2 -->
+                <a href="#" class="oss-card">
+                    <div class="oss-header">
+                        <div class="repo-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                        </div>
+                        <span class="mono" style="font-size: 0.7rem; border: 1px solid var(--border); padding: 2px 6px; border-radius: 100px;">PUBLIC</span>
+                    </div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">tensor-bridge</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">High-performance Rust bindings for custom PyTorch inference operations.</p>
+                    <div class="oss-stats">
+                        <span class="stat"><span style="color: var(--accent-blue);">●</span> Rust</span>
+                        <span class="stat">★ 890</span>
+                        <span class="stat">⑂ 120</span>
+                    </div>
+                </a>
+
+                <!-- Repo 3 -->
+                <a href="#" class="oss-card">
+                    <div class="oss-header">
+                        <div class="repo-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <span class="mono" style="font-size: 0.7rem; border: 1px solid var(--border); padding: 2px 6px; border-radius: 100px;">BETA</span>
+                    </div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">prompt-architect</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Version control and regression testing for LLM system prompts.</p>
+                    <div class="oss-stats">
+                        <span class="stat"><span style="color: var(--accent-green);">●</span> TypeScript</span>
+                        <span class="stat">★ 150</span>
+                        <span class="stat">⑂ 12</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. BLOG SECTION -->
+    <section id="blog" class="section-padding" style="background: #080808; border-top: 1px solid var(--border);">
+        <div class="container">
+            <div class="section-header">
+                <span class="mono section-label">/// ENGINEERING LOG</span>
+                <h2>Insights</h2>
+            </div>
+
+            <div class="blog-list">
+                <a href="#" class="blog-item">
+                    <div class="blog-date">2024.10.12</div>
+                    <div class="blog-title">Why we migrated our vector search from Pinecone to Qdrant</div>
+                    <div class="read-link">READ_LOG ></div>
+                </a>
+                <a href="#" class="blog-item">
+                    <div class="blog-date">2024.09.28</div>
+                    <div class="blog-title">The hidden cost of "Chain of Thought" in production latency</div>
+                    <div class="read-link">READ_LOG ></div>
+                </a>
+                <a href="#" class="blog-item">
+                    <div class="blog-date">2024.09.05</div>
+                    <div class="blog-title">Engineering robust guardrails for GenAI financial advisors</div>
+                    <div class="read-link">READ_LOG ></div>
+                </a>
+                <a href="#" class="blog-item">
+                    <div class="blog-date">2024.08.15</div>
+                    <div class="blog-title">Fine-tuning Llama 3 on proprietary medical datasets</div>
+                    <div class="read-link">READ_LOG ></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 40px;">
+                <div>
+                    <h2 style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 10px;">Allied Augmented Intelligence</h2>
+                    <p class="mono" style="color: var(--text-muted);">Engineering the future.</p>
+                </div>
+                <div style="text-align: right;">
+                    <a href="mailto:hello@aai.com" class="btn-primary" style="margin-bottom: 20px;">Start a Conversation</a>
+                    <p class="mono" style="opacity: 0.5;">&copy; 2024 AAI. All Systems Nominal.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        class HackerScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
+                this.frame = 0;
+                this.queue = [];
+                this.resolve = null;
+            }
+            setText(newText, speed = 1) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 60 * speed); 
+                    const end = start + Math.floor(Math.random() * 60 * speed);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.chars[Math.floor(Math.random() * this.chars.length)];
+                            this.queue[i].char = char;
+                        }
+                        output += `<span style="color: var(--text-muted); opacity: 0.5;">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    if (this.resolve) this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update.bind(this));
+                    this.frame++;
+                }
+            }
+        }
+
+        const headlineEl = document.getElementById('hacker-headline');
+        const heroScrambler = new HackerScramble(headlineEl);
+        setTimeout(() => {
+            heroScrambler.setText("Intelligence that belongs in production.", 1.2).then(() => {
+                document.querySelector('.hacker-text-cursor').style.display = 'none';
+            });
+        }, 2500);
+
+        const coreEl = document.getElementById('core-output');
+        const coreScrambler = new HackerScramble(coreEl);
+        const coreWords = ["IMPACT", "SCALE", "TRUST", "REALITY"];
+        let wordIndex = 0;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    startCoreCycle();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        observer.observe(document.querySelector('.convergence-wrapper'));
+
+        function startCoreCycle() {
+            setInterval(() => {
+                wordIndex = (wordIndex + 1) % coreWords.length;
+                coreScrambler.setText(coreWords[wordIndex], 0.5);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
